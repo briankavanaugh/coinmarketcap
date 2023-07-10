@@ -177,19 +177,7 @@ namespace CoinMarketCap
             var endpointWithParams = $"{endpoint}{queryParams}";
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, endpointWithParams);
             var responseMessage = await HttpClient.SendAsync(requestMessage, cancellationToken);
-            bool can_read = responseMessage.IsSuccessStatusCode;
-            if (!responseMessage.IsSuccessStatusCode)
-            {
-                var knownStatusCodes = new HttpStatusCode[] {
-                    HttpStatusCode.BadRequest,
-                    HttpStatusCode.Unauthorized,
-                    HttpStatusCode.PaymentRequired,
-                    HttpStatusCode.Forbidden,
-                    (HttpStatusCode)429 /*Too many requests*/
-                };
-                can_read = knownStatusCodes.Contains(responseMessage.StatusCode);
-            }
-            if(can_read)
+            if( responseMessage.IsSuccessStatusCode )
             {
                 var content = await responseMessage.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<Response<T>>(content);
